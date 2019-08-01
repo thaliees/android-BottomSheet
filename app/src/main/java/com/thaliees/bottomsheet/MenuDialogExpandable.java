@@ -51,9 +51,5 @@ public class MenuDialogExpandable extends BottomSheetDialogFragment {
         super.dismiss();
     }
 
-    public ExpandableListAdapter getExpandableListAdapter() {
-        return expandableListAdapter;
-    }
-
     public void setItemSelected(ExpandableListView.OnChildClickListener listener){ itemSelected = listener; }
 }

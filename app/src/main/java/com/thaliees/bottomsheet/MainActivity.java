@@ -1,11 +1,15 @@
 package com.thaliees.bottomsheet;
 
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -13,8 +17,11 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    MenuDialogExpandable bottomSheetMenu;
-    HashMap<String, List<String>> listData;
+    private MenuDialogExpandable bottomSheetMenu;
+    private HashMap<String, List<String>> listData;
+    private ArrayAdapter<String> adapter;
+    private BottomSheetDialog bottomSheetDialog;
+    private String[] languages;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,9 +29,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         initListData();
-        Button expandable = findViewById(R.id.button_expandable);
+        initList();
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, languages);
 
+        Button expandable = findViewById(R.id.button_expandable);
+        Button list = findViewById(R.id.button_list);
+        
         expandable.setOnClickListener(this);
+        list.setOnClickListener(this);
     }
 
     @Override
@@ -34,7 +46,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             bottomSheetMenu.show(getSupportFragmentManager(), "Menu Modal");
             bottomSheetMenu.setItemSelected(selectedChild);
         }
+        else if (v.getId() == R.id.button_list) {
+            View view = getLayoutInflater().inflate(R.layout.bottomsheet_list, null);
+            ListView list = view.findViewById(R.id.listview);
+            list.setAdapter(adapter);
+            list.setOnItemClickListener(selectedItem);
+            bottomSheetDialog = new BottomSheetDialog(this);
+            bottomSheetDialog.setContentView(view);
+            bottomSheetDialog.show();
+        }
     }
+
+    private AdapterView.OnItemClickListener selectedItem = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            bottomSheetDialog.dismiss();
+            Toast.makeText(MainActivity.this, "Item: " + languages[position], Toast.LENGTH_LONG).show();
+        }
+    };
 
     private ExpandableListView.OnChildClickListener selectedChild = new ExpandableListView.OnChildClickListener() {
         @Override
@@ -61,5 +90,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         subcategories.add("The Purge");
         subcategories.add("The lion king");
         listData.put("MOVIES", subcategories);
+    }
+
+    private void initList(){
+        languages = new String[] { "SQL", "JAVA", "JAVA SCRIPT", "C#", "PYTHON", "C++", "PHP", "IOS", "ANDROID" };
     }
 }
